@@ -6,8 +6,8 @@ import util
 import filter
 
 # wavfile = wave.open("./testfiles/Grand Piano - Fazioli - minor chords - Am highest.wav")
-#wavfile = wave.open("./testfiles/Grand Piano - Fazioli - minor chords - Gm highest.wav")
-wavfile = wave.open("./testfiles/440Hz_44100Hz_16bit_05sec.wav")
+wavfile = wave.open("./testfiles/Grand Piano - Fazioli - minor chords - Gm highest.wav")
+#wavfile = wave.open("./testfiles/440Hz_44100Hz_16bit_05sec.wav")
 
 fs = wavfile.getframerate()
 nchannels = wavfile.getnchannels()
