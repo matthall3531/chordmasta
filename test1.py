@@ -6,8 +6,8 @@ import util
 import filter
 import harmonics as harm
 
-# wavfile = wave.open("./testfiles/Grand Piano - Fazioli - minor chords - Am highest.wav")
-wavfile = wave.open("./testfiles/Grand Piano - Fazioli - minor chords - Gm highest.wav")
+wavfile = wave.open("./testfiles/Grand Piano - Fazioli - minor chords - Am highest.wav")
+# wavfile = wave.open("./testfiles/Grand Piano - Fazioli - minor chords - Gm highest.wav")
 #wavfile = wave.open("./testfiles/440Hz_44100Hz_16bit_05sec.wav")
 
 fs = wavfile.getframerate()
@@ -63,6 +63,7 @@ X = X/sum(X)
 # Save the 20 last and reverse
 sorted1 = X.argsort()[-100:][::-1]
 
+harm.init()
 harmonics = harm.find_harmonics(sorted1, 3)
 print(harmonics)
 
