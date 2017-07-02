@@ -6,12 +6,13 @@ import wave
 import util
 import filter
 import note
+import harmonics as harm
 
 notetable = note.create_note_table()
 
-wavfile = wave.open("./testfiles/Grand Piano - Fazioli - minor chords - Am highest.wav")
+#wavfile = wave.open("./testfiles/Grand Piano - Fazioli - minor chords - Am highest.wav")
 #wavfile = wave.open("./testfiles/Grand Piano - Fazioli - minor chords - Gm highest.wav")
-#wavfile = wave.open("./testfiles/440Hz_44100Hz_16bit_05sec.wav")
+wavfile = wave.open("./testfiles/440Hz_44100Hz_16bit_05sec.wav")
 
 fs = wavfile.getframerate()
 nchannels = wavfile.getnchannels()
@@ -58,7 +59,7 @@ plt.show()
 
 # Use the first half of the data and convert to magnitude
 X = np.abs(yf[0:len(yf)//2])
-print(type(X))
+#print(type(X))
 
 # Normalize X
 X = X/sum(X)
@@ -70,10 +71,10 @@ harm.init()
 harmonics = harm.find_harmonics(sorted1, 3)
 print(harmonics)
 
-area = sum(X[sorted1])
-print("Area of the 100 first : {}".format(area))
+#area = sum(X[sorted1])
+#print("Area of the 100 first : {}".format(area))
 
-for i in range(0, len(sorted1)):
-    print("Frequency: {0} Area: {1}".format(sorted1[i], X[sorted1[i]]))
+#for i in range(0, len(sorted1)):
+#    print("Frequency: {0} Area: {1}".format(sorted1[i], X[sorted1[i]]))
 
 #print(sorted1*(fs/N))
