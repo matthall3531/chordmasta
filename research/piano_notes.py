@@ -21,7 +21,6 @@ def init():
                'upper': freqUpper - (freqUpper - freq)/2,
                'note': note_name}
         __notes.append(key)
-    print(__notes)
 
 
 def binary_search(list_of_notes, freq):
