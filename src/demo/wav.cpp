@@ -47,7 +47,7 @@ bool WavFile::Open(const std::string& deviceName)
     fwrite(dummy, 4, 1, m_fileFp);
   }
 
-  return m_fileFp == NULL;
+  return m_fileFp != NULL;
 }
 
 void WavFile::Write(const void* buffer, uint32_t size)

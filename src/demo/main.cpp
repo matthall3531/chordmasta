@@ -50,6 +50,12 @@ int main(int argc, char** argv)
     const PaHostApiInfo* hostApiInfo = Pa_GetHostApiInfo(index);
     const PaDeviceIndex deviceIndex = hostApiInfo->defaultInputDevice;
 
+    const PaDeviceInfo* deviceInfo = Pa_GetDeviceInfo(deviceIndex);
+
+    printf("Device info : %s (api=%s)\n",
+      deviceInfo->name,
+      hostApiInfo->name);
+
     PaStreamParameters streamParams;
     streamParams.device = deviceIndex;
     streamParams.channelCount = 2;
