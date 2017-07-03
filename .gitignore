@@ -1,2 +1,5 @@
 .idea/*
 __pycache__/*
+external/portaudio/build/*
+research/__pycache__/*
+src/build/*
