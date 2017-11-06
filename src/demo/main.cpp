@@ -1,7 +1,10 @@
 #include <stdio.h>
 
 #include "portaudio.h"
+
+#ifdef WIN32
 #include <Windows.h>
+#endif
 
 #include "wav.h"
 
