@@ -49,9 +49,16 @@ public class Main {
                     FFTResult fftResult = new FFTResult(decimatedData.size());
                     fft.process(decimatedData, fftResult);
 
-                    for (int n = 0; n < fftResult.size(); n++) {
+                    double maxValue = 0.0;
+                    int maxIndex = 0;
+                    for (int n = 1; n < fftResult.size(); n++) {
                        System.out.println(n + "=" + fftResult.get(n).abs());
+                       if (maxValue < fftResult.get(n).abs()) {
+                           maxIndex = n;
+                           maxValue = fftResult.get(n).abs();
+                       }
                     }
+                    System.out.println("Max index = " + maxIndex + ", maxValue=" + maxValue);
                 }
                 catch(Exception e) {
                     e.printStackTrace();

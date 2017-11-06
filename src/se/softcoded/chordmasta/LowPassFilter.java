@@ -35,7 +35,7 @@ public class LowPassFilter implements ProcessUnit {
         double filteredVal = 0.0;
         history.add(val);
         for (int n = 0; n < coeff.length; n++) {
-            filteredVal += coeff[n] * history.get(-n);
+            filteredVal += coeff[n] * history.get(n);
         }
         return filteredVal;
     }

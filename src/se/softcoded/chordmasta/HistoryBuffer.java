@@ -28,7 +28,7 @@ public class HistoryBuffer {
         if (index < 0) {
             index += buffer.length;
         }
-        return index;
+        return buffer[index];
     }
 
     public int size() {
