@@ -1,5 +1,5 @@
 package se.softcoded.chordmasta;
 
-public abstract class BlockData<T> {
+public abstract class BlockData {
     public abstract int size();
 }

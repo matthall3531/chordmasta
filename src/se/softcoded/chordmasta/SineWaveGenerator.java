@@ -8,7 +8,6 @@ public class SineWaveGenerator {
     private final int sampleRate;
     private final double frequency;
     private final double amplitude;
-    private final double samplesPerPeriod;
 
     private int currentSample = 0;
 
@@ -16,7 +15,6 @@ public class SineWaveGenerator {
         this.sampleRate = sampleRate;
         this.frequency = frequency;
         this.amplitude = amplitude;
-        this.samplesPerPeriod = sampleRate / frequency;
     }
 
     /** Sample-based mode uses the following formula to compute the output of the Sine Wave block.

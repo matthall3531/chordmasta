@@ -34,6 +34,8 @@ public class Main {
                     LowPassFilter filter = new LowPassFilter();
                     Decimator decimationFilter = new Decimator(4);
                     FFT fft = new FFT();
+                    PianoNotes notes = new PianoNotes();
+                    CandidateSelection candidateSelection = new CandidateSelection(notes);
 
                     StereoBlockData stereoblock = micDataQueue.take();
 
@@ -59,6 +61,9 @@ public class Main {
                        }
                     }
                     System.out.println("Max index = " + maxIndex + ", maxValue=" + maxValue);
+
+                    CandidateSet candidates = new CandidateSet();
+                    candidateSelection.process(fftResult, candidates);
                 }
                 catch(Exception e) {
                     e.printStackTrace();
