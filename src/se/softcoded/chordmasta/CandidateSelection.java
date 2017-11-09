@@ -1,5 +1,8 @@
 package se.softcoded.chordmasta;
 
+import se.softcoded.chordmasta.signalprocessing.FFTResult;
+import se.softcoded.chordmasta.signalprocessing.ProcessUnit;
+
 public class CandidateSelection implements ProcessUnit {
     private final PianoNotes notes;
 

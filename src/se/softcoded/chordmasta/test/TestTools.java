@@ -1,4 +1,6 @@
-package se.softcoded.chordmasta;
+package se.softcoded.chordmasta.test;
+
+import se.softcoded.chordmasta.MonoBlockData;
 
 public class TestTools {
     public static void generateSine(double F, double A, double Fs, double t, MonoBlockData monoBlockData) {

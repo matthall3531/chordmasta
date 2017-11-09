@@ -1,4 +1,7 @@
-package se.softcoded.chordmasta;
+package se.softcoded.chordmasta.signalprocessing;
+
+import se.softcoded.chordmasta.BlockData;
+import se.softcoded.chordmasta.MonoBlockData;
 
 public class Decimator implements ProcessUnit {
     private final int frequencyDivider;

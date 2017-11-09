@@ -1,5 +1,8 @@
 package se.softcoded.chordmasta;
 
+import se.softcoded.chordmasta.signalprocessing.*;
+import se.softcoded.chordmasta.util.SineWaveGenerator;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 

@@ -1,4 +1,4 @@
-package se.softcoded.chordmasta;
+package se.softcoded.chordmasta.signalprocessing;
 
 /******************************************************************************
  *  Compilation:  javac Complex.java

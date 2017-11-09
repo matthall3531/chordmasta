@@ -1,4 +1,8 @@
-package se.softcoded.chordmasta;
+package se.softcoded.chordmasta.signalprocessing;
+
+import se.softcoded.chordmasta.BlockData;
+import se.softcoded.chordmasta.util.HistoryBuffer;
+import se.softcoded.chordmasta.MonoBlockData;
 
 public class LowPassFilter implements ProcessUnit {
     private double coeff[] = new double[] {

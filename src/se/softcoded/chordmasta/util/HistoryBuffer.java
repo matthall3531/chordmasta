@@ -1,4 +1,4 @@
-package se.softcoded.chordmasta;
+package se.softcoded.chordmasta.util;
 
 public class HistoryBuffer {
     private double[] buffer;

@@ -1,4 +1,7 @@
-package se.softcoded.chordmasta;
+package se.softcoded.chordmasta.signalprocessing;
+
+import se.softcoded.chordmasta.BlockData;
+import se.softcoded.chordmasta.util.QuickIndexSort;
 
 import java.util.Vector;
 

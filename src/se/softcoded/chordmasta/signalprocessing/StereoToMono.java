@@ -1,4 +1,4 @@
-package se.softcoded.chordmasta;
+package se.softcoded.chordmasta.signalprocessing;
 
 public class StereoToMono implements ProcessUnit {
     @Override

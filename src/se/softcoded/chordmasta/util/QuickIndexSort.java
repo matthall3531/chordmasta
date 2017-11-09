@@ -1,4 +1,4 @@
-package se.softcoded.chordmasta;
+package se.softcoded.chordmasta.util;
 
 import java.util.Comparator;
 import java.util.Vector;

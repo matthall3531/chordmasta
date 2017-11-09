@@ -1,4 +1,6 @@
-package se.softcoded.chordmasta;
+package se.softcoded.chordmasta.util;
+
+import se.softcoded.chordmasta.StereoBlockData;
 
 /**
  * Generates a sine wave of a specified frequency and amplitude.
