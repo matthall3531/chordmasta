@@ -31,7 +31,8 @@ package se.softcoded.chordmasta;
 
 import java.util.Objects;
 
-public class Complex {
+public class Complex implements Comparable {
+    private static final double EPSILON = 0.0001;
     private final double re;   // the real part
     private final double im;   // the imaginary part
 
@@ -144,11 +145,19 @@ public class Complex {
         if (x == null) return false;
         if (this.getClass() != x.getClass()) return false;
         Complex that = (Complex) x;
-        return (this.re == that.re) && (this.im == that.im);
+        double reDiff = Math.abs(this.re - that.re);
+        double imDiff = Math.abs(this.im - that.im);
+        return reDiff < EPSILON && imDiff < EPSILON;
     }
 
     // See Section 3.3.
     public int hashCode() {
         return Objects.hash(re, im);
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Complex that = (Complex)o;
+        return this.abs() > that.abs() ? 1 : this.abs() < that.abs() ? -1 : 0;
     }
 }
