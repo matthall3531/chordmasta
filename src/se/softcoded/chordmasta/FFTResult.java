@@ -3,11 +3,16 @@ package se.softcoded.chordmasta;
 import java.util.Vector;
 
 public class FFTResult extends BlockData {
-    private QuickIndexSort<Complex> sorter = new QuickIndexSort<Complex>();
-    Vector<Complex> data = new Vector<>();
+    private QuickIndexSort<Complex> sorter = new QuickIndexSort<>();
+    private Vector<Complex> data;
 
     public FFTResult(int size) {
+        data = new Vector<>();
         data.setSize(size);
+    }
+
+    private FFTResult(Vector<Complex> data) {
+        this.data = data;
     }
 
     @Override
@@ -28,7 +33,11 @@ public class FFTResult extends BlockData {
         for (int n=0; n<sortedIndex.length; n++) {
             sortedIndex[n] = n;
         }
-        sorter.sort(data, sortedIndex);
+        sorter.reverseSort(data, sortedIndex);
         return sortedIndex;
+    }
+
+    public FFTResult slice(int indexLow, int indexHigh) {
+        return new FFTResult(new Vector<>(data.subList(indexLow, indexHigh)));
     }
 }

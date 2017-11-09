@@ -1,19 +1,30 @@
 package se.softcoded.chordmasta;
 
+import java.util.Comparator;
 import java.util.Vector;
 
 public class QuickIndexSort<T extends Comparable>  {
     private Vector<T> numbers;
     private int[] index;
     private int number;
+    private Comparator<T> comparator;
+
+    public void reverseSort(Vector<T> values, int[] index) {
+        sort(values, index, Comparator.reverseOrder());
+    }
 
     public void sort(Vector<T> values, int[] index) {
+        sort(values, index, Comparator.naturalOrder());
+    }
+
+    public void sort(Vector<T> values, int[] index, Comparator<T> comparator) {
         // check for empty or null array
         if (values ==null || values.size()==0){
             return;
         }
         this.numbers = values;
         this.index = index;
+        this.comparator = comparator;
         number = values.size();
         quicksort(0, number - 1);
     }
@@ -27,12 +38,12 @@ public class QuickIndexSort<T extends Comparable>  {
         while (i <= j) {
             // If the current value from the left list is smaller than the pivot
             // element then get the next element from the left list
-            while (numbers.get(index[i]).compareTo(pivot) < 0) {
+            while (comparator.compare(numbers.get(index[i]), pivot) < 0) {
                 i++;
             }
             // If the current value from the right list is larger than the pivot
             // element then get the next element from the right list
-            while (numbers.get(index[j]).compareTo(pivot) > 0) {
+            while (comparator.compare(numbers.get(index[j]), pivot) > 0) {
                 j--;
             }
 

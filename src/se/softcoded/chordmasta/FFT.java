@@ -102,6 +102,6 @@ public class FFT implements ProcessUnit {
         FFT fft = new FFT();
         fft.process(monoBlockData, fftResult);
         int index = (int)Math.round(F / Fs * DATA_SIZE);
-        assertEquals(index, fftResult.getSortedIndex()[0]);
+        assertEquals(index, fftResult.slice(0, DATA_SIZE/2).getSortedIndex()[0]);
     }
 }
