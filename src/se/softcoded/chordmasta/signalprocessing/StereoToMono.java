@@ -1,5 +1,9 @@
 package se.softcoded.chordmasta.signalprocessing;
 
+import se.softcoded.chordmasta.BlockData;
+import se.softcoded.chordmasta.MonoBlockData;
+import se.softcoded.chordmasta.StereoBlockData;
+
 public class StereoToMono implements ProcessUnit {
     @Override
     public void process(BlockData in, BlockData out) {

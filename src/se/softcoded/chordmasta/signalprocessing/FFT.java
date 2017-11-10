@@ -106,4 +106,22 @@ public class FFT implements ProcessUnit {
         int index = (int)Math.round(F / Fs * DATA_SIZE);
         assertEquals(index, fftResult.slice(0, DATA_SIZE/2).getSortedIndex()[0]);
     }
+
+    // Disabled until Adaptive Volume Gain is introduced
+   /* @Test
+    public void frequencyTest2() {
+        final double F = 5;
+        final double Fs = 50.0;
+        final double A = 1.0;
+        final int DATA_SIZE = 128;
+
+        MonoBlockData monoBlockData = new MonoBlockData(DATA_SIZE);
+        TestTools.generateAmplitudeVaryingSine(F, A-0.5, A+0.5, 1.0, Fs, (double)DATA_SIZE/Fs, monoBlockData);
+        FFTResult fftResult = new FFTResult(monoBlockData.size());
+        FFT fft = new FFT();
+        fft.process(monoBlockData, fftResult);
+        int index = (int)Math.round(F / Fs * DATA_SIZE);
+        assertEquals(index, fftResult.slice(0, DATA_SIZE/2).getSortedIndex()[0]);
+    }*/
+
 }
