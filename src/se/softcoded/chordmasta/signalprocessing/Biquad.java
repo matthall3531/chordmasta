@@ -1,7 +1,10 @@
 package se.softcoded.chordmasta.signalprocessing;
 
+import org.junit.Test;
+
 import se.softcoded.chordmasta.BlockData;
 import se.softcoded.chordmasta.MonoBlockData;
+import se.softcoded.chordmasta.test.TestTools;
 import se.softcoded.chordmasta.util.HistoryBuffer;
 
 import javax.naming.OperationNotSupportedException;
@@ -17,7 +20,7 @@ public class Biquad implements ProcessUnit {
     private HistoryBuffer yHistory = new HistoryBuffer(2);
     private double[] a = new double[3];
     private double[] b = new double[3];
-
+    
     public Biquad(double sampleRate, double fCenter, double Q, BiquadFilterType filterType) throws OperationNotSupportedException {
         if (filterType == BiquadFilterType.LOW_PASS) {
             coeffCalc.createLowPass(sampleRate, fCenter, Q, a, b);

@@ -1,6 +1,7 @@
 package se.softcoded.chordmasta.signalprocessing;
 
 import se.softcoded.chordmasta.BlockData;
+import se.softcoded.chordmasta.MonoBlockData;
 import se.softcoded.chordmasta.util.QuickIndexSort;
 
 import java.util.Vector;
@@ -42,5 +43,11 @@ public class FFTResult extends BlockData {
 
     public FFTResult slice(int indexLow, int indexHigh) {
         return new FFTResult(new Vector<>(data.subList(indexLow, indexHigh)));
+    }
+
+    public void calculateMagnitude(MonoBlockData<Double> monoBlockData) {
+        for (int i=0; i<data.size(); i++) {
+            monoBlockData.set(i, data.get(i).abs());
+        }
     }
 }

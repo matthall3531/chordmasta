@@ -20,4 +20,22 @@ public class TestTools {
             System.out.println(y);
         }
     }
+
+    public static void generateMultipleSines(double[] frequencies, double[] amplitudes, double Fs, double t, MonoBlockData<Double> monoBlockData) {
+        if (frequencies.length != amplitudes.length) {
+            throw new IllegalArgumentException("frequencies and amplitudes are not of same length!");
+        }
+        MonoBlockData<Double> internalData = new MonoBlockData(monoBlockData.size());
+        for (int n=0; n<frequencies.length; n++) {
+            if (n > 0) {
+                generateSine(frequencies[n], amplitudes[n], Fs, t, internalData);
+                for (int i=0; i<internalData.size(); i++) {
+                    monoBlockData.set(i, (internalData.get(i) + monoBlockData.get(i)) / 2.0);
+                }
+            }
+            else {
+                generateSine(frequencies[n], amplitudes[n], Fs, t, monoBlockData);
+            }
+        }
+    }
 }
