@@ -10,6 +10,7 @@ public class TestTools {
             monoBlockData.set(sample, y);
         }
     }
+
     public static void generateAmplitudeVaryingSine(double F, double minA, double maxA, double At, double Fs, double t, MonoBlockData monoBlockData) {
         int nrOfSamplesInBlock = (int)(Fs * t);
         int nrOfASamplesPerPeriod = (int)((At/t) * nrOfSamplesInBlock);
