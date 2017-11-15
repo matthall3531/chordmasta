@@ -1,6 +1,7 @@
 package se.softcoded.chordmasta.test;
 
 import org.junit.Test;
+
 import se.softcoded.chordmasta.MonoBlockData;
 import se.softcoded.chordmasta.signalprocessing.Biquad;
 import se.softcoded.chordmasta.signalprocessing.FFT;
@@ -10,6 +11,8 @@ public class BiquadTest {
     /**
      * Test low pass biquad by generating a signal with 2 sines, one at 200Hz and one
      * at 5000Hz. They should be equal in amplitude. Use the biquad to filter out the 5000Hz signal.
+     *
+     * Test that the 5000Hz signal is there before and that it is gone after.
      */
     @Test
     public void testLowPassBiquad() {
@@ -42,8 +45,12 @@ public class BiquadTest {
         before.calculateMagnitude(magBefore);
         after.calculateMagnitude(magAfter);
 
-        for (int i=0; i<after.size(); i++) {
-            System.out.println(i + " " + magBefore.get(i) + " ---- " + magAfter.get(i));
-        }
+        int[] sortedIndexBefore = before.slice(0, BLOCK_SIZE/2).getSortedIndex();
+        int[] sortedIndexAfter = after.slice(0, BLOCK_SIZE/2).getSortedIndex();
+
+        org.junit.Assert.assertEquals((int)(5000.0/11000.0 * BLOCK_SIZE) - 1, sortedIndexBefore[0]);
+        org.junit.Assert.assertEquals((int)(200.0/11000.0 * BLOCK_SIZE) - 1, sortedIndexBefore[1]);
+
+        org.junit.Assert.assertEquals((int)(200.0/11000.0 * BLOCK_SIZE) - 1, sortedIndexAfter[0]);
     }
 }
