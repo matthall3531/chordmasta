@@ -1,6 +1,7 @@
 package se.softcoded.chordmasta;
 
 import se.softcoded.chordmasta.signalprocessing.*;
+import se.softcoded.chordmasta.test.TimeMetrics;
 import se.softcoded.chordmasta.util.SineWaveGenerator;
 
 import java.util.concurrent.BlockingQueue;
@@ -31,19 +32,24 @@ public class Main {
         }).start();
 
         new Thread(()-> {
+            TimeMetrics metrics = new TimeMetrics("Audio-chain");
+            int loops = 0;
+
+            StereoToMono stereoToMono = new StereoToMono();
+            LowPassFilter filter = new LowPassFilter();
+            Decimator decimationFilter = new Decimator(4);
+            FFT fft = new FFT();
+            PianoNotes notes = new PianoNotes();
+            CandidateSelection candidateSelection = new CandidateSelection(notes);
             while(!done) {
                 try {
-                    StereoToMono stereoToMono = new StereoToMono();
-                    LowPassFilter filter = new LowPassFilter();
-                    Decimator decimationFilter = new Decimator(4);
-                    FFT fft = new FFT();
-                    PianoNotes notes = new PianoNotes();
-                    CandidateSelection candidateSelection = new CandidateSelection(notes);
 
                     StereoBlockData stereoblock = micDataQueue.take();
 
                     MonoBlockData monoBlock = new MonoBlockData(BLOCK_SIZE);
+                    metrics.start("stereo-to-mono");
                     stereoToMono.process(stereoblock, monoBlock);
+                    metrics.stop("stereo-to-mono");
 
                     MonoBlockData filteredData = new MonoBlockData(BLOCK_SIZE);
                     filter.process(monoBlock, filteredData);
@@ -54,19 +60,14 @@ public class Main {
                     FFTResult fftResult = new FFTResult(decimatedData.size());
                     fft.process(decimatedData, fftResult);
 
-                    double maxValue = 0.0;
-                    int maxIndex = 0;
-                    for (int n = 1; n < fftResult.size(); n++) {
-                       System.out.println(n + "=" + fftResult.get(n).abs());
-                       if (maxValue < fftResult.get(n).abs()) {
-                           maxIndex = n;
-                           maxValue = fftResult.get(n).abs();
-                       }
-                    }
-                    System.out.println("Max index = " + maxIndex + ", maxValue=" + maxValue);
-
                     CandidateSet candidates = new CandidateSet();
                     candidateSelection.process(fftResult, candidates);
+
+                    if ((loops % 100) == 0) {
+                        metrics.print();
+                    }
+
+                    loops++;
                 }
                 catch(Exception e) {
                     e.printStackTrace();

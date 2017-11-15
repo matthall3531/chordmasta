@@ -7,7 +7,6 @@ import se.softcoded.chordmasta.StereoBlockData;
 public class StereoToMono implements ProcessUnit {
     @Override
     public void process(BlockData in, BlockData out) {
-        System.out.println("Stereo2Mono");
         StereoBlockData stereo = (StereoBlockData)in;
         MonoBlockData mono = (MonoBlockData)out;
 
