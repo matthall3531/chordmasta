@@ -1,13 +1,9 @@
 package se.softcoded.chordmasta.signalprocessing;
 
-import org.junit.Test;
 import se.softcoded.chordmasta.*;
-import se.softcoded.chordmasta.test.TestTools;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 public class FFT implements ProcessUnit {
     @Override
