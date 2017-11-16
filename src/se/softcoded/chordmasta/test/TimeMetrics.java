@@ -2,9 +2,7 @@ package se.softcoded.chordmasta.test;
 
 import se.softcoded.chordmasta.util.NanoTime;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class TimeMetrics {
 
@@ -14,6 +12,8 @@ public class TimeMetrics {
         long avg = 0;
         long max = -Long.MAX_VALUE;
         long min = Long.MAX_VALUE;
+
+        Vector<Metric> childMetrics = new Vector<>();
 
         Metric(String name) {
             this.name = name;
@@ -26,6 +26,21 @@ public class TimeMetrics {
             avg = (avg * measurements + nanosecs) / (measurements + 1);
             measurements += 1;
         }
+
+        public void addChild(Metric metric) {
+            childMetrics.add(metric);
+        }
+
+        public String toString() {
+            String s = name + " : " +
+                    NanoTime.toMsec(min) + " " +
+                    NanoTime.toMsec(avg) + " " +
+                    NanoTime.toMsec(max) + "\n";
+            for (Metric m : childMetrics) {
+                s = s + "\t" + m.toString();
+            }
+            return s;
+        }
     }
 
     private class OngoingMeasurement {
@@ -36,15 +51,30 @@ public class TimeMetrics {
     private String name;
     private Map<String, Metric> metricMap = new HashMap<>();
     private Map<String, OngoingMeasurement> ongoingMeasurementMap= new HashMap<>();
+    private Stack<Metric> metricStack = new Stack<>();
+    private Vector<Metric> mainMetrics = new Vector<>();
 
     public TimeMetrics(String name) {
         this.name = name;
     }
 
     public void start(String metricName) {
+        Metric current;
         if (!metricMap.containsKey(metricName)) {
-            metricMap.put(metricName, new Metric(metricName));
+            current = new Metric(metricName);
+            metricMap.put(metricName, current);
+
+            if (metricStack.empty()) {
+                mainMetrics.add(current);
+            }
+            else {
+                metricStack.peek().addChild(current);
+            }
         }
+        else {
+            current = metricMap.get(metricName);
+        }
+        metricStack.push(current);
         OngoingMeasurement meas = new OngoingMeasurement();
         ongoingMeasurementMap.put(metricName, meas);
         meas.start = System.nanoTime();
@@ -55,19 +85,12 @@ public class TimeMetrics {
         OngoingMeasurement meas = ongoingMeasurementMap.remove(metricName);
         meas.stop = stopTime;
         metricMap.get(metricName).add(meas);
+        metricStack.pop();
     }
 
     public void print() {
-        Iterator it = metricMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            String name = (String)pair.getKey();
-            Metric metric = (Metric)pair.getValue();
-            System.out.println("Metric : " + metric.name);
-            System.out.println("   min : " + NanoTime.toMsec(metric.min) + " msec");
-            System.out.println("   avg : " + NanoTime.toMsec(metric.avg) + " msec");
-            System.out.println("   max : " + NanoTime.toMsec(metric.max) + " msec");
-            System.out.println("     n : " + metric.measurements);
+        for (Metric metric : mainMetrics) {
+            System.out.println(metric.toString());
         }
     }
 }

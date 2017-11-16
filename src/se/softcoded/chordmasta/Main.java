@@ -46,6 +46,8 @@ public class Main {
 
                     StereoBlockData stereoblock = micDataQueue.take();
 
+                    metrics.start("main-loop");
+
                     MonoBlockData monoBlock = new MonoBlockData(BLOCK_SIZE);
                     metrics.start("stereo-to-mono");
                     stereoToMono.process(stereoblock, monoBlock);
@@ -70,6 +72,8 @@ public class Main {
                     metrics.start("candidate-selection");
                     candidateSelection.process(fftResult, candidates);
                     metrics.stop("candidate-selection");
+
+                    metrics.stop("main-loop");
 
                     if ((loops % 100) == 0) {
                         metrics.print();
