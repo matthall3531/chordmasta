@@ -52,16 +52,24 @@ public class Main {
                     metrics.stop("stereo-to-mono");
 
                     MonoBlockData filteredData = new MonoBlockData(BLOCK_SIZE);
+                    metrics.start("low-pass-filter");
                     filter.process(monoBlock, filteredData);
+                    metrics.stop("low-pass-filter");
 
                     MonoBlockData decimatedData = new MonoBlockData(BLOCK_SIZE / 4);
+                    metrics.start("decimation");
                     decimationFilter.process(filteredData, decimatedData);
+                    metrics.stop("decimation");
 
                     FFTResult fftResult = new FFTResult(decimatedData.size());
+                    metrics.start("fft");
                     fft.process(decimatedData, fftResult);
+                    metrics.stop("fft");
 
                     CandidateSet candidates = new CandidateSet();
+                    metrics.start("candidate-selection");
                     candidateSelection.process(fftResult, candidates);
+                    metrics.stop("candidate-selection");
 
                     if ((loops % 100) == 0) {
                         metrics.print();

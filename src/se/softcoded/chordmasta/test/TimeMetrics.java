@@ -1,5 +1,7 @@
 package se.softcoded.chordmasta.test;
 
+import se.softcoded.chordmasta.util.NanoTime;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -62,9 +64,9 @@ public class TimeMetrics {
             String name = (String)pair.getKey();
             Metric metric = (Metric)pair.getValue();
             System.out.println("Metric : " + metric.name);
-            System.out.println("   min : " + metric.min);
-            System.out.println("   avg : " + metric.avg);
-            System.out.println("   max : " + metric.max);
+            System.out.println("   min : " + NanoTime.toMsec(metric.min) + " msec");
+            System.out.println("   avg : " + NanoTime.toMsec(metric.avg) + " msec");
+            System.out.println("   max : " + NanoTime.toMsec(metric.max) + " msec");
             System.out.println("     n : " + metric.measurements);
         }
     }
