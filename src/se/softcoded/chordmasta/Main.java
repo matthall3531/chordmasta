@@ -9,6 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Main {
     private static final int SAMPLE_RATE = 44100;
+    private static final int DECIMATION_FACTOR = 4;
     private static final int BLOCK_SIZE = 4096;
 
     public static void main(String[] args) {
@@ -37,10 +38,10 @@ public class Main {
 
             StereoToMono stereoToMono = new StereoToMono();
             LowPassFilter filter = new LowPassFilter();
-            Decimator decimationFilter = new Decimator(4);
+            Decimator decimationFilter = new Decimator(DECIMATION_FACTOR);
             FFT fft = new FFT();
             PianoNotes notes = new PianoNotes();
-            CandidateSelection candidateSelection = new CandidateSelection(notes);
+            CandidateSelection candidateSelection = new CandidateSelection(notes, SAMPLE_RATE / DECIMATION_FACTOR);
             while(!done) {
                 try {
 
@@ -58,7 +59,7 @@ public class Main {
                     filter.process(monoBlock, filteredData);
                     metrics.stop("low-pass-filter");
 
-                    MonoBlockData decimatedData = new MonoBlockData(BLOCK_SIZE / 4);
+                    MonoBlockData decimatedData = new MonoBlockData(BLOCK_SIZE / DECIMATION_FACTOR);
                     metrics.start("decimation");
                     decimationFilter.process(filteredData, decimatedData);
                     metrics.stop("decimation");

@@ -21,6 +21,13 @@ public class PianoNotes {
         public String toString() {
             return "PianoNote : " + noteName + " " + freqLower + " < " + freq + " < " + freqUpper;
         }
+
+        public int compareTo(PianoKey o2) {
+            if (o2.freq > freqLower && o2.freq < freqUpper) {
+                return 0;
+            }
+            return freq < o2.freq ? -1 : 1;
+        }
     }
 
     private String[] octaveNoteNames = new String[]{
@@ -41,10 +48,10 @@ public class PianoNotes {
     }
 
     public PianoKey findNote(double frequency) {
-        Collections.binarySearch(pianoKeys,
+        int keyIdx = Collections.binarySearch(pianoKeys,
                 new PianoKey(frequency, 0, 0, ""),
-                (o1, o2) -> 0);
-        return null;
+                (o1, o2) -> (o1).compareTo(o2));
+        return pianoKeys.get(keyIdx);
     }
 
 }
