@@ -32,14 +32,20 @@ public class TimeMetrics {
         }
 
         public String toString() {
-            String s = name + " : " +
-                    NanoTime.toMsec(min) + " " +
-                    NanoTime.toMsec(avg) + " " +
-                    NanoTime.toMsec(max) + "\n";
+            StringBuilder sb = new StringBuilder();
+            Formatter formatter = new Formatter(sb);
+            formatter.format("%-20s %10f %10f %10f\n",
+                    name,
+                    NanoTime.toMsec(min),
+                    NanoTime.toMsec(avg),
+                    NanoTime.toMsec(max));
             for (Metric m : childMetrics) {
-                s = s + "\t" + m.toString();
+                sb.append("  ");
+                sb.append((char)0x02ea);
+                sb.append("  ");
+                sb.append(m.toString());
             }
-            return s;
+            return sb.toString();
         }
     }
 
