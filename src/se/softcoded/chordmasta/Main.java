@@ -3,7 +3,10 @@ package se.softcoded.chordmasta;
 import se.softcoded.chordmasta.signalprocessing.*;
 import se.softcoded.chordmasta.test.TimeMetrics;
 import se.softcoded.chordmasta.util.SineWaveGenerator;
+import se.softcoded.chordmasta.wavfile.WavFile;
+import se.softcoded.chordmasta.wavfile.WavFileGenerator;
 
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -15,15 +18,20 @@ public class Main {
     public static void main(String[] args) {
         // Create queue for communication between threads
         BlockingQueue<StereoBlockData> micDataQueue = new LinkedBlockingQueue();
-        boolean done = false;
+        boolean[] done = new boolean[] { false };
 
         new Thread(() -> {
-            SineWaveGenerator sine = new SineWaveGenerator(SAMPLE_RATE, 440.0, 5.0);
+            SineWaveGenerator audioGenerator = new SineWaveGenerator(SAMPLE_RATE, 440.0, 5.0);
+            //WavFileGenerator audioGenerator = new WavFileGenerator("./research/testfiles/440Hz_44100Hz_16bit_05sec.wav");
             try {
-                while (!done) {
+                while (!done[0]) {
                     StereoBlockData block = new StereoBlockData(BLOCK_SIZE);
-                    sine.generateBlock(BLOCK_SIZE, block);
-                    micDataQueue.add(block);
+                    if (audioGenerator.generateBlock(BLOCK_SIZE, block)) {
+                        micDataQueue.add(block);
+                    }
+                    else {
+                        done[0] = true;
+                    }
                     Thread.sleep(BLOCK_SIZE * 1000 / SAMPLE_RATE);
                 }
             }
@@ -39,10 +47,11 @@ public class Main {
             StereoToMono stereoToMono = new StereoToMono();
             LowPassFilter filter = new LowPassFilter();
             Decimator decimationFilter = new Decimator(DECIMATION_FACTOR);
+            HannWindow hannWindow = new HannWindow(SAMPLE_RATE / DECIMATION_FACTOR);
             FFT fft = new FFT();
             PianoNotes notes = new PianoNotes();
             CandidateSelection candidateSelection = new CandidateSelection(notes, SAMPLE_RATE / DECIMATION_FACTOR);
-            while(!done) {
+            while(!done[0]) {
                 try {
 
                     StereoBlockData stereoblock = micDataQueue.take();
@@ -64,15 +73,33 @@ public class Main {
                     decimationFilter.process(filteredData, decimatedData);
                     metrics.stop("decimation");
 
-                    FFTResult fftResult = new FFTResult(decimatedData.size());
+                    // Zero pad
+                    metrics.start("zero-padding");
+                    MonoBlockData decimatedDataPadded = new MonoBlockData(SAMPLE_RATE / DECIMATION_FACTOR, 0.0);
+                    decimatedDataPadded.copy(decimatedData, 0);
+                    metrics.stop("zero-padding");
+
+                    metrics.start("hann-window");
+                    MonoBlockData hannWindowBlock = new MonoBlockData(decimatedDataPadded.size());
+                    hannWindow.process(decimatedDataPadded, hannWindowBlock);
+                    metrics.stop("hann-window");
+
+                    FFTResult fftResult = new FFTResult(hannWindowBlock.size());
                     metrics.start("fft");
-                    fft.process(decimatedData, fftResult);
+                    fft.process(hannWindowBlock, fftResult);
                     metrics.stop("fft");
 
                     CandidateSet candidates = new CandidateSet();
                     metrics.start("candidate-selection");
                     candidateSelection.process(fftResult, candidates);
                     metrics.stop("candidate-selection");
+
+                    List<CandidateSet.Candidate> candidateList = candidates.getCandidates((c1, c2) -> c1.magnitude > c2.magnitude ? -1 : (c1.magnitude < c2.magnitude ? 1 : 0));
+
+                    System.out.println("------------------------------------");
+                    for (CandidateSet.Candidate c : candidateList) {
+                        System.out.println("key="+c.key+", mag="+c.magnitude+", hits="+c.hits);
+                    }
 
                     metrics.stop("main-loop");
 

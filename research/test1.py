@@ -13,7 +13,7 @@ notetable = note.create_note_table()
 #wavfile = wave.open("./testfiles/Grand Piano - Fazioli - minor chords - Am highest.wav")
 #wavfile = wave.open("./testfiles/Grand Piano - Fazioli - minor chords - Gm highest.wav")
 #wavfile = wave.open("./testfiles/440Hz_44100Hz_16bit_05sec.wav")
-wavfile = wave.open("./testfiles/ackordtest1.wav")
+wavfile = wave.open("./testfiles/low.wav")
 
 fs = wavfile.getframerate()
 nchannels = wavfile.getnchannels()

@@ -29,7 +29,7 @@ public class SineWaveGenerator {
     k is a repeating integer value that ranges from 0 to p–1.
     o is the offset (phase shift) of the signal.
     b is the signal bias.*/
-    public void generateBlock(int nrOfSamplesInBlock, StereoBlockData blockData) {
+    public boolean generateBlock(int nrOfSamplesInBlock, StereoBlockData blockData) {
         for (int sample = 0; sample<nrOfSamplesInBlock; sample++) {
             double y = amplitude * Math.sin(2 * Math.PI * frequency/(double)sampleRate * currentSample);
             currentSample++;
@@ -38,5 +38,6 @@ public class SineWaveGenerator {
             }
             blockData.appendSample(y, y);
         }
+        return true;
     }
 }

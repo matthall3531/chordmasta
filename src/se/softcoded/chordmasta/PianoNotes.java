@@ -48,12 +48,26 @@ public class PianoNotes {
     }
 
     public PianoKey findNote(double frequency) {
-        int keyIdx = Collections.binarySearch(pianoKeys,
-                new PianoKey(frequency, 0, 0, ""),
-                (o1, o2) -> (o1).compareTo(o2));
-        return pianoKeys.get(keyIdx);
+        int keyIdx = getKeyIdx(frequency);
+        return pianoKeys.get(Math.max(0, Math.min(keyIdx, pianoKeys.size()-1)));
     }
 
+    private int getKeyIdx(double frequency) {
+        return Collections.binarySearch(pianoKeys,
+                    new PianoKey(frequency, 0, 0, ""),
+                    (o1, o2) -> (o1).compareTo(o2));
+    }
+
+    public PianoKey[] findNotes(double f, double bandwidth) {
+        int lowIdx = getKeyIdx(f - bandwidth);
+        int hiIdx = getKeyIdx(f + bandwidth);
+        int size = hiIdx - lowIdx + 1;
+        PianoKey[] array = new PianoKey[size];
+        for (int n=lowIdx; n<=hiIdx; n++) {
+            array[n - lowIdx] = pianoKeys.get(n);
+        }
+        return array;
+    }
 }
 
 

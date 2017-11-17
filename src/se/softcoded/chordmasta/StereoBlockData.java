@@ -27,10 +27,22 @@ public class StereoBlockData extends BlockData {
     }
 
     public double getLeft(int index) {
-        return leftSamples.get(index);
+        try {
+            return leftSamples.get(index);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+        return 0.0;
     }
 
     public double getRight(int index) {
-        return rightSamples.get(index);
+        try {
+            return rightSamples.get(index);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+        return 0.0;
     }
 }

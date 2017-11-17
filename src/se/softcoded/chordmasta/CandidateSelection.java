@@ -14,7 +14,7 @@ public class CandidateSelection implements ProcessUnit {
 
     /**
      * Check for the highest magnitude frequency components from the FFT.
-     *
+     * Assign the bins to the notes and check which notes get the most hits.
      *
      *
      * @param in
@@ -27,11 +27,14 @@ public class CandidateSelection implements ProcessUnit {
 
         int[] binIdx = fftResult.slice(0, fftResult.size()/2).getSortedIndex();
 
-        for (int idx = 0; idx < 10; idx++) {
+        for (int idx = 0; idx < 50; idx++) {
             int bin = binIdx[idx];
             double binMiddleFreq = calculateBinFrequency(bin, fftResult.size());
-            PianoNotes.PianoKey key = notes.findNote(binMiddleFreq);
-            System.out.println(idx + ". " + "binMiddleFrequency="+binMiddleFreq+", key="+key+", mag="+fftResult.get(bin).abs());
+            PianoNotes.PianoKey[] keys = notes.findNotes(binMiddleFreq, sampleRate/fftResult.size());
+            for (PianoNotes.PianoKey key : keys) {
+                //System.out.println(idx + ". " + "binMiddleFrequency=" + binMiddleFreq + ", key=" + key + ", mag=" + fftResult.get(bin).abs());
+                candidateSet.add(key, fftResult.get(bin).abs());
+            }
         }
     }
 
