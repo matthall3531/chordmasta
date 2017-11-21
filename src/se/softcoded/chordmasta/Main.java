@@ -1,11 +1,13 @@
 package se.softcoded.chordmasta;
 
+import se.softcoded.chordmasta.csv.CsvFile;
 import se.softcoded.chordmasta.signalprocessing.*;
 import se.softcoded.chordmasta.test.TimeMetrics;
 import se.softcoded.chordmasta.util.SineWaveGenerator;
 import se.softcoded.chordmasta.wavfile.WavFile;
 import se.softcoded.chordmasta.wavfile.WavFileGenerator;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -21,8 +23,8 @@ public class Main {
         boolean[] done = new boolean[] { false };
 
         new Thread(() -> {
-            SineWaveGenerator audioGenerator = new SineWaveGenerator(SAMPLE_RATE, 440.0, 5.0);
-            //WavFileGenerator audioGenerator = new WavFileGenerator("./research/testfiles/440Hz_44100Hz_16bit_05sec.wav");
+            //SineWaveGenerator audioGenerator = new SineWaveGenerator(SAMPLE_RATE, 440.0, 5.0);
+            WavFileGenerator audioGenerator = new WavFileGenerator("./research/testfiles/ackordtest1.wav");
             try {
                 while (!done[0]) {
                     StereoBlockData block = new StereoBlockData(BLOCK_SIZE);
@@ -47,12 +49,13 @@ public class Main {
             StereoToMono stereoToMono = new StereoToMono();
             LowPassFilter filter = new LowPassFilter();
             Decimator decimationFilter = new Decimator(DECIMATION_FACTOR);
-            HannWindow hannWindow = new HannWindow(SAMPLE_RATE / DECIMATION_FACTOR);
+            HannWindow hannWindow = new HannWindow(BLOCK_SIZE / DECIMATION_FACTOR);
             FFT fft = new FFT();
             PianoNotes notes = new PianoNotes();
             CandidateSelection candidateSelection = new CandidateSelection(notes, SAMPLE_RATE / DECIMATION_FACTOR);
             while(!done[0]) {
                 try {
+                    CsvFile csvFile = new CsvFile(new File("chordmasta_output_" + loops + ".csv"));
 
                     StereoBlockData stereoblock = micDataQueue.take();
 
@@ -73,20 +76,20 @@ public class Main {
                     decimationFilter.process(filteredData, decimatedData);
                     metrics.stop("decimation");
 
-                    // Zero pad
-                    metrics.start("zero-padding");
-                    MonoBlockData decimatedDataPadded = new MonoBlockData(SAMPLE_RATE / DECIMATION_FACTOR, 0.0);
-                    decimatedDataPadded.copy(decimatedData, 0);
-                    metrics.stop("zero-padding");
-
                     metrics.start("hann-window");
-                    MonoBlockData hannWindowBlock = new MonoBlockData(decimatedDataPadded.size());
-                    hannWindow.process(decimatedDataPadded, hannWindowBlock);
+                    MonoBlockData hannWindowBlock = new MonoBlockData(decimatedData.size());
+                    hannWindow.process(decimatedData, hannWindowBlock);
                     metrics.stop("hann-window");
 
-                    FFTResult fftResult = new FFTResult(hannWindowBlock.size());
+                    // Zero pad
+                    metrics.start("zero-padding");
+                    MonoBlockData hannWindowDataPadded = new MonoBlockData(SAMPLE_RATE / DECIMATION_FACTOR, 0.0);
+                    hannWindowDataPadded.copy(hannWindowBlock, 0);
+                    metrics.stop("zero-padding");
+
+                    FFTResult fftResult = new FFTResult(hannWindowDataPadded.size());
                     metrics.start("fft");
-                    fft.process(hannWindowBlock, fftResult);
+                    fft.process(hannWindowDataPadded, fftResult);
                     metrics.stop("fft");
 
                     CandidateSet candidates = new CandidateSet();
@@ -102,6 +105,17 @@ public class Main {
                     }
 
                     metrics.stop("main-loop");
+
+                    csvFile.addColumn("Stereo", stereoblock);
+                    csvFile.addColumn("Mono-data", monoBlock);
+                    csvFile.addColumn("Low-pass-filter", filteredData);
+                    csvFile.addColumn("Decimation", decimatedData);
+                    csvFile.addColumn("Hann-window-factors", hannWindow.factors);
+                    csvFile.addColumn("Hann-window", hannWindowBlock);
+                    csvFile.addColumn("Zero-padded", hannWindowDataPadded);
+                    csvFile.addColumn("FFT", fftResult);
+                    csvFile.addColumn("Candidates", candidateList);
+                    csvFile.save();
 
                     if ((loops % 100) == 0) {
                         metrics.print();

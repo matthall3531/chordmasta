@@ -1,34 +1,35 @@
 package se.softcoded.chordmasta;
 
+import java.util.Arrays;
 import java.util.Vector;
 
 public class StereoBlockData extends BlockData {
-    private Vector<Double> leftSamples = new Vector<>();
-    private Vector<Double> rightSamples = new Vector<>();
+    private final double[] leftSamples;
+    private final double[] rightSamples;
     private int currentSample = 0;
 
     public StereoBlockData(int size) {
-        rightSamples.setSize(size);
-        leftSamples.setSize(size);
+        rightSamples = new double[size];
+        leftSamples = new double[size];
     }
 
     public void appendSample(double left, double right) {
-        if (currentSample >= leftSamples.capacity()) {
+        if (currentSample >= leftSamples.length) {
             throw new IndexOutOfBoundsException();
         }
-        leftSamples.set(currentSample, left);
-        rightSamples.set(currentSample, right);
+        leftSamples[currentSample] =  left;
+        rightSamples[currentSample] = right;
         currentSample++;
     }
 
     @Override
     public int size() {
-        return leftSamples.capacity();
+        return leftSamples.length;
     }
 
     public double getLeft(int index) {
         try {
-            return leftSamples.get(index);
+            return leftSamples[index];
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -38,11 +39,16 @@ public class StereoBlockData extends BlockData {
 
     public double getRight(int index) {
         try {
-            return rightSamples.get(index);
+            return rightSamples[index];
         }
         catch(Exception e) {
             e.printStackTrace();
         }
         return 0.0;
+    }
+
+    public void split(MonoBlockData left, MonoBlockData right) {
+        left.copy(leftSamples);
+        right.copy(rightSamples);
     }
 }

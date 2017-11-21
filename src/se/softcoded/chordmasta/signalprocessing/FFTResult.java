@@ -45,7 +45,7 @@ public class FFTResult extends BlockData {
         return new FFTResult(new Vector<>(data.subList(indexLow, indexHigh)));
     }
 
-    public void calculateMagnitude(MonoBlockData<Double> monoBlockData) {
+    public void calculateMagnitude(MonoBlockData monoBlockData) {
         for (int i=0; i<data.size(); i++) {
             monoBlockData.set(i, data.get(i).abs());
         }

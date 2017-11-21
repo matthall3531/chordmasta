@@ -17,7 +17,7 @@ public class BiquadTest {
     @Test
     public void testLowPassBiquad() {
         final int BLOCK_SIZE = (int)(0.2 * 11000);
-        MonoBlockData<Double> signal = new MonoBlockData<>(BLOCK_SIZE);
+        MonoBlockData signal = new MonoBlockData(BLOCK_SIZE);
         TestTools.generateMultipleSines(
                 new double[] { 200.0, 5000.0 },
                 new double[] { 1.0, 2.0 },
@@ -28,7 +28,7 @@ public class BiquadTest {
         FFTResult before = new FFTResult(BLOCK_SIZE);
         fft.process(signal, before);
 
-        MonoBlockData<Double> filteredSignal = new MonoBlockData<Double>(BLOCK_SIZE);
+        MonoBlockData filteredSignal = new MonoBlockData(BLOCK_SIZE);
         try {
             Biquad biquad = new Biquad(11000, 500.0, 0.75, Biquad.BiquadFilterType.LOW_PASS);
             biquad.process(signal, filteredSignal);

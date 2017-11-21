@@ -2,40 +2,40 @@ package se.softcoded.chordmasta;
 
 import java.util.Vector;
 
-public class MonoBlockData<T> extends BlockData {
-    private Vector<T> samples = new Vector<>();
+public class MonoBlockData extends BlockData {
+    private double[] samples;
 
     public MonoBlockData(int blockSize) {
-        samples.setSize(blockSize);
+        samples = new double[blockSize];
     }
 
-    public MonoBlockData(int blockSize, T initValue) {
+    public MonoBlockData(int blockSize, double initValue) {
         this(blockSize);
         for (int i=0; i<blockSize; i++) {
-            samples.set(i, initValue);
+            samples[i] = initValue;
         }
     }
 
-    public void set(int index, T data) {
-        samples.set(index, data);
+    public void set(int index, double data) {
+        samples[index] = data;
     }
 
-    public T get(int index) {
-        return samples.get(index);
+    public double get(int index) {
+        return samples[index];
     }
 
     @Override
     public int size() {
-        return samples.size();
+        return samples.length;
     }
 
-    public void copy(Double[] data) {
-        samples.copyInto(data);
+    public void copy(double[] data) {
+        System.arraycopy(data, 0, samples, 0, data.length);
     }
 
     public void copy(MonoBlockData monoBlockData, int offset) {
-        for (int n=0; n<monoBlockData.size() && (n+offset) < samples.size(); n++) {
-            samples.set(n + offset, (T)monoBlockData.get(n));
+        for (int n=0; n<monoBlockData.size() && (n+offset) < samples.length; n++) {
+            samples[n + offset] = monoBlockData.get(n);
         }
     }
 }
