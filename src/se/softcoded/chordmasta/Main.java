@@ -1,11 +1,10 @@
 package se.softcoded.chordmasta;
 
 import se.softcoded.chordmasta.csv.CsvFile;
+import se.softcoded.chordmasta.ext.wav.WavFileGenerator;
 import se.softcoded.chordmasta.signalprocessing.*;
 import se.softcoded.chordmasta.test.TimeMetrics;
 import se.softcoded.chordmasta.util.SineWaveGenerator;
-import se.softcoded.chordmasta.wavfile.WavFile;
-import se.softcoded.chordmasta.wavfile.WavFileGenerator;
 
 import java.io.File;
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Main {
     private static final int SAMPLE_RATE = 44100;
     private static final int DECIMATION_FACTOR = 4;
-    private static final int BLOCK_SIZE = 4096;
+    private static final int BLOCK_SIZE = 32768;
 
     public static void main(String[] args) {
         // Create queue for communication between threads
@@ -23,8 +22,8 @@ public class Main {
         boolean[] done = new boolean[] { false };
 
         new Thread(() -> {
-            //SineWaveGenerator audioGenerator = new SineWaveGenerator(SAMPLE_RATE, 440.0, 5.0);
-            WavFileGenerator audioGenerator = new WavFileGenerator("./research/testfiles/ackordtest1.wav");
+            SineWaveGenerator audioGenerator = new SineWaveGenerator(SAMPLE_RATE, 440.0, 5.0);
+            //WavFileGenerator audioGenerator = new WavFileGenerator("./research/testfiles/ackordtest1.wav");
             try {
                 while (!done[0]) {
                     StereoBlockData block = new StereoBlockData(BLOCK_SIZE);
@@ -61,18 +60,18 @@ public class Main {
 
                     metrics.start("main-loop");
 
-                    MonoBlockData monoBlock = new MonoBlockData(BLOCK_SIZE);
                     metrics.start("stereo-to-mono");
+                    MonoBlockData monoBlock = new MonoBlockData(BLOCK_SIZE);
                     stereoToMono.process(stereoblock, monoBlock);
                     metrics.stop("stereo-to-mono");
 
-                    MonoBlockData filteredData = new MonoBlockData(BLOCK_SIZE);
                     metrics.start("low-pass-filter");
+                    MonoBlockData filteredData = new MonoBlockData(BLOCK_SIZE);
                     filter.process(monoBlock, filteredData);
                     metrics.stop("low-pass-filter");
 
-                    MonoBlockData decimatedData = new MonoBlockData(BLOCK_SIZE / DECIMATION_FACTOR);
                     metrics.start("decimation");
+                    MonoBlockData decimatedData = new MonoBlockData(BLOCK_SIZE / DECIMATION_FACTOR);
                     decimationFilter.process(filteredData, decimatedData);
                     metrics.stop("decimation");
 
@@ -81,30 +80,24 @@ public class Main {
                     hannWindow.process(decimatedData, hannWindowBlock);
                     metrics.stop("hann-window");
 
-                    // Zero pad
-                    metrics.start("zero-padding");
-                    MonoBlockData hannWindowDataPadded = new MonoBlockData(SAMPLE_RATE / DECIMATION_FACTOR, 0.0);
-                    hannWindowDataPadded.copy(hannWindowBlock, 0);
-                    metrics.stop("zero-padding");
-
-                    FFTResult fftResult = new FFTResult(hannWindowDataPadded.size());
                     metrics.start("fft");
-                    fft.process(hannWindowDataPadded, fftResult);
+                    FFTResult fftResult = new FFTResult(hannWindowBlock.size());
+                    fft.process(hannWindowBlock, fftResult);
                     metrics.stop("fft");
 
-                    CandidateSet candidates = new CandidateSet();
                     metrics.start("candidate-selection");
+                    CandidateSet candidates = new CandidateSet();
                     candidateSelection.process(fftResult, candidates);
                     metrics.stop("candidate-selection");
 
                     List<CandidateSet.Candidate> candidateList = candidates.getCandidates((c1, c2) -> c1.magnitude > c2.magnitude ? -1 : (c1.magnitude < c2.magnitude ? 1 : 0));
 
+                    metrics.stop("main-loop");
+
                     System.out.println("------------------------------------");
                     for (CandidateSet.Candidate c : candidateList) {
                         System.out.println("key="+c.key+", mag="+c.magnitude+", hits="+c.hits);
                     }
-
-                    metrics.stop("main-loop");
 
                     csvFile.addColumn("Stereo", stereoblock);
                     csvFile.addColumn("Mono-data", monoBlock);
@@ -112,7 +105,6 @@ public class Main {
                     csvFile.addColumn("Decimation", decimatedData);
                     csvFile.addColumn("Hann-window-factors", hannWindow.factors);
                     csvFile.addColumn("Hann-window", hannWindowBlock);
-                    csvFile.addColumn("Zero-padded", hannWindowDataPadded);
                     csvFile.addColumn("FFT", fftResult);
                     csvFile.addColumn("Candidates", candidateList);
                     csvFile.save();

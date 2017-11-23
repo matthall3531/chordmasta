@@ -27,7 +27,7 @@ public class CandidateSelection implements ProcessUnit {
 
         int[] binIdx = fftResult.slice(0, fftResult.size()/2).getSortedIndex();
 
-        for (int idx = 0; idx < 200; idx++) {
+        for (int idx = 0; idx < 20; idx++) {
             int bin = binIdx[idx];
             double binMiddleFreq = calculateBinFrequency(bin, fftResult.size());
             PianoNotes.PianoKey[] keys = notes.findNotes(binMiddleFreq, sampleRate/fftResult.size());

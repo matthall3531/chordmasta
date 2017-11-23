@@ -40,7 +40,9 @@ public class CsvFile {
     }
 
     public void addColumn(String name, FFTResult fftResult) {
-
+        columnNames.add(name);
+        columns.add(ColumnHandlerFactory.create(fftResult));
+        maxColumnSize = Math.max(maxColumnSize, fftResult.size());
     }
 
     public void addColumn(String name, List<CandidateSet.Candidate> candidateList) {
