@@ -1,48 +1,49 @@
 package se.softcoded.chordmasta.util;
 
 import java.util.Comparator;
+import java.util.Vector;
 
-public class QuickIndexSort  {
-    private double[] numbers;
+public class QuickIndexSortT<T extends Comparable>  {
+    private Vector<T> numbers;
     private int[] index;
     private int number;
-    private Comparator<Double> comparator;
+    private Comparator<T> comparator;
 
-    public void reverseSort(double[] values, int[] index) {
+    public void reverseSort(Vector<T> values, int[] index) {
         sort(values, index, Comparator.reverseOrder());
     }
 
-    public void sort(double[] values, int[] index) {
+    public void sort(Vector<T> values, int[] index) {
         sort(values, index, Comparator.naturalOrder());
     }
 
-    public void sort(double[] values, int[] index, Comparator<Double> comparator) {
+    public void sort(Vector<T> values, int[] index, Comparator<T> comparator) {
         // check for empty or null array
-        if (values ==null || values.length==0){
+        if (values ==null || values.size()==0){
             return;
         }
         this.numbers = values;
         this.index = index;
         this.comparator = comparator;
-        number = values.length;
+        number = values.size();
         quicksort(0, number - 1);
     }
 
     private void quicksort(int low, int high) {
         int i = low, j = high;
         // Get the pivot element from the middle of the list
-        double pivot = numbers[index[low + (high-low)/2]];
+        T pivot = numbers.get(index[low + (high-low)/2]);
 
         // Divide into two lists
         while (i <= j) {
             // If the current value from the left list is smaller than the pivot
             // element then get the next element from the left list
-            while (comparator.compare(numbers[index[i]], pivot) < 0) {
+            while (comparator.compare(numbers.get(index[i]), pivot) < 0) {
                 i++;
             }
             // If the current value from the right list is larger than the pivot
             // element then get the next element from the right list
-            while (comparator.compare(numbers[index[j]], pivot) > 0) {
+            while (comparator.compare(numbers.get(index[j]), pivot) > 0) {
                 j--;
             }
 

@@ -50,6 +50,7 @@ public class Main {
             Decimator decimationFilter = new Decimator(DECIMATION_FACTOR);
             HannWindow hannWindow = new HannWindow(BLOCK_SIZE / DECIMATION_FACTOR);
             FFT fft = new FFT();
+            Normalize normalize = new Normalize();
             PianoNotes notes = new PianoNotes();
             CandidateSelection candidateSelection = new CandidateSelection(notes, SAMPLE_RATE / DECIMATION_FACTOR);
             while(!done[0]) {
@@ -85,9 +86,15 @@ public class Main {
                     fft.process(hannWindowBlock, fftResult);
                     metrics.stop("fft");
 
+                    metrics.start("normalize");
+                    FFTResult sliced = fftResult.slice(0, fftResult.size()/2);
+                    MonoBlockData normalizedMagnitude = new MonoBlockData(sliced.size());
+                    normalize.process(sliced, normalizedMagnitude);
+                    metrics.stop("normalize");
+
                     metrics.start("candidate-selection");
                     CandidateSet candidates = new CandidateSet();
-                    candidateSelection.process(fftResult, candidates);
+                    candidateSelection.process(normalizedMagnitude, candidates);
                     metrics.stop("candidate-selection");
 
                     List<CandidateSet.Candidate> candidateList = candidates.getCandidates((c1, c2) -> c1.magnitude > c2.magnitude ? -1 : (c1.magnitude < c2.magnitude ? 1 : 0));
@@ -99,17 +106,18 @@ public class Main {
                         System.out.println("key="+c.key+", mag="+c.magnitude+", hits="+c.hits);
                     }
 
-                    csvFile.addColumn("Stereo", stereoblock);
+                    /*csvFile.addColumn("Stereo", stereoblock);
                     csvFile.addColumn("Mono-data", monoBlock);
                     csvFile.addColumn("Low-pass-filter", filteredData);
                     csvFile.addColumn("Decimation", decimatedData);
                     csvFile.addColumn("Hann-window-factors", hannWindow.factors);
                     csvFile.addColumn("Hann-window", hannWindowBlock);
                     csvFile.addColumn("FFT", fftResult);
+                    csvFile.addColumn("Normalized", normalizedMagnitude);
                     csvFile.addColumn("Candidates", candidateList);
-                    csvFile.save();
+                    csvFile.save();*/
 
-                    if ((loops % 100) == 0) {
+                    if ((loops % 2) == 0) {
                         metrics.print();
                     }
 

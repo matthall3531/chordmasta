@@ -1,9 +1,10 @@
 package se.softcoded.chordmasta;
 
-import java.util.Vector;
+import se.softcoded.chordmasta.util.QuickIndexSort;
 
 public class MonoBlockData extends BlockData {
     private double[] samples;
+    private QuickIndexSort sorter = new QuickIndexSort();
 
     public MonoBlockData(int blockSize) {
         samples = new double[blockSize];
@@ -37,5 +38,14 @@ public class MonoBlockData extends BlockData {
         for (int n=0; n<monoBlockData.size() && (n+offset) < samples.length; n++) {
             samples[n + offset] = monoBlockData.get(n);
         }
+    }
+
+    public int[] getSortedIndex() {
+        int[] sortedIndex = new int[samples.length];
+        for (int n=0; n<sortedIndex.length; n++) {
+            sortedIndex[n] = n;
+        }
+        sorter.reverseSort(samples, sortedIndex);
+        return sortedIndex;
     }
 }

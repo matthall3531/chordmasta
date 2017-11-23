@@ -2,13 +2,16 @@ package se.softcoded.chordmasta.signalprocessing;
 
 import se.softcoded.chordmasta.BlockData;
 import se.softcoded.chordmasta.MonoBlockData;
+import se.softcoded.chordmasta.Normalize;
 import se.softcoded.chordmasta.util.QuickIndexSort;
+import se.softcoded.chordmasta.util.QuickIndexSortT;
 
 import java.util.Vector;
 
 public class FFTResult extends BlockData {
-    private QuickIndexSort<Complex> sorter = new QuickIndexSort<>();
+    QuickIndexSortT<Complex> sorter = new QuickIndexSortT<>();
     private Vector<Complex> data;
+    public Complex maxValue = new Complex(0, 0);
 
     public FFTResult(int size) {
         data = new Vector<>();
@@ -26,10 +29,30 @@ public class FFTResult extends BlockData {
 
     public void set(int index, Complex val) {
         data.set(index, val);
+        if (val.abs() > maxValue.abs()) {
+            maxValue = val;
+        }
     }
 
     public Complex get(int index) {
         return data.get(index);
+    }
+
+    public FFTResult slice(int indexLow, int indexHigh) {
+        FFTResult newResult = new FFTResult(new Vector<>(data.subList(indexLow, indexHigh)));
+        int[] sortedIdx = newResult.getSortedIndex();
+        newResult.maxValue = newResult.get(sortedIdx[0]);
+        return newResult;
+    }
+
+    public Complex getMaxValue() {
+        return maxValue;
+    }
+
+    public void calculateMagnitude(MonoBlockData monoBlockData) {
+        for (int i=0; i<data.size(); i++) {
+            monoBlockData.set(i, data.get(i).abs());
+        }
     }
 
     public int[] getSortedIndex() {
@@ -39,15 +62,5 @@ public class FFTResult extends BlockData {
         }
         sorter.reverseSort(data, sortedIndex);
         return sortedIndex;
-    }
-
-    public FFTResult slice(int indexLow, int indexHigh) {
-        return new FFTResult(new Vector<>(data.subList(indexLow, indexHigh)));
-    }
-
-    public void calculateMagnitude(MonoBlockData monoBlockData) {
-        for (int i=0; i<data.size(); i++) {
-            monoBlockData.set(i, data.get(i).abs());
-        }
     }
 }

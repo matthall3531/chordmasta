@@ -3,6 +3,7 @@ package se.softcoded.chordmasta.test;
 import org.junit.Test;
 
 import se.softcoded.chordmasta.MonoBlockData;
+import se.softcoded.chordmasta.Normalize;
 import se.softcoded.chordmasta.signalprocessing.Biquad;
 import se.softcoded.chordmasta.signalprocessing.FFT;
 import se.softcoded.chordmasta.signalprocessing.FFTResult;
@@ -45,8 +46,13 @@ public class BiquadTest {
         before.calculateMagnitude(magBefore);
         after.calculateMagnitude(magAfter);
 
-        int[] sortedIndexBefore = before.slice(0, BLOCK_SIZE/2).getSortedIndex();
-        int[] sortedIndexAfter = after.slice(0, BLOCK_SIZE/2).getSortedIndex();
+        MonoBlockData normData = new MonoBlockData(before.size()/2);
+        Normalize norm = new Normalize();
+        norm.process(before.slice(0, BLOCK_SIZE/2), normData);
+        int[] sortedIndexBefore = normData.getSortedIndex();
+
+        norm.process(after.slice(0, BLOCK_SIZE/2), normData);
+        int[] sortedIndexAfter = normData.getSortedIndex();
 
         org.junit.Assert.assertEquals((int)(5000.0/11000.0 * BLOCK_SIZE) - 1, sortedIndexBefore[0]);
         org.junit.Assert.assertEquals((int)(200.0/11000.0 * BLOCK_SIZE) - 1, sortedIndexBefore[1]);

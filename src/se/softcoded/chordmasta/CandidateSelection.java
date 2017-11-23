@@ -1,6 +1,5 @@
 package se.softcoded.chordmasta;
 
-import se.softcoded.chordmasta.signalprocessing.FFTResult;
 import se.softcoded.chordmasta.signalprocessing.ProcessUnit;
 
 public class CandidateSelection implements ProcessUnit {
@@ -22,18 +21,19 @@ public class CandidateSelection implements ProcessUnit {
      */
     @Override
     public void process(BlockData in, BlockData out) {
-        FFTResult fftResult = (FFTResult)in;
+        MonoBlockData data = (MonoBlockData)in;
         CandidateSet candidateSet = (CandidateSet)out;
 
-        int[] binIdx = fftResult.slice(0, fftResult.size()/2).getSortedIndex();
+        int[] binIdx = data.getSortedIndex();
+        int size = data.size();
 
         for (int idx = 0; idx < 20; idx++) {
             int bin = binIdx[idx];
-            double binMiddleFreq = calculateBinFrequency(bin, fftResult.size());
-            PianoNotes.PianoKey[] keys = notes.findNotes(binMiddleFreq, sampleRate/fftResult.size());
+            double binMiddleFreq = calculateBinFrequency(bin, size);
+            PianoNotes.PianoKey[] keys = notes.findNotes(binMiddleFreq, sampleRate/(2*size));
             for (PianoNotes.PianoKey key : keys) {
                 //System.out.println(idx + ". " + "binMiddleFrequency=" + binMiddleFreq + ", key=" + key + ", mag=" + fftResult.get(bin).abs());
-                candidateSet.add(key, fftResult.get(bin).abs());
+                candidateSet.add(key, data.get(bin));
             }
         }
     }
@@ -45,7 +45,8 @@ public class CandidateSelection implements ProcessUnit {
      * @return
      */
     private double calculateBinFrequency(int bin, int numberOfBins) {
-        double binBandWidth = sampleRate/numberOfBins;
-        return (double)bin/(double)numberOfBins * sampleRate + binBandWidth / 2.0;
+        double numberOfBinsOriginal = 2 * numberOfBins;
+        double binBandWidth = sampleRate/numberOfBinsOriginal;
+        return (double)bin/(double)numberOfBinsOriginal * sampleRate + binBandWidth / 2.0;
     }
 }
