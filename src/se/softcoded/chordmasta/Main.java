@@ -22,8 +22,8 @@ public class Main {
         boolean[] done = new boolean[] { false };
 
         new Thread(() -> {
-            SineWaveGenerator audioGenerator = new SineWaveGenerator(SAMPLE_RATE, 440.0, 5.0);
-            //WavFileGenerator audioGenerator = new WavFileGenerator("./research/testfiles/ackordtest1.wav");
+            //SineWaveGenerator audioGenerator = new SineWaveGenerator(SAMPLE_RATE, 440.0, 5.0);
+            WavFileGenerator audioGenerator = new WavFileGenerator("./research/testfiles/ackordtest1.wav");
             try {
                 while (!done[0]) {
                     StereoBlockData block = new StereoBlockData(BLOCK_SIZE);

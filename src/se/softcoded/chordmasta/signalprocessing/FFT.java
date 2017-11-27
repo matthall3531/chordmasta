@@ -12,7 +12,7 @@ public class FFT implements ProcessUnit {
         FFTResult result = (FFTResult)out;
         List<Complex> data = new ArrayList<>();
         for (int i = 0; i < in.size(); i++) {
-            data.add(new Complex((double)inData.get(i), 0.0));
+            data.add(new Complex(inData.get(i), 0.0));
         }
         fftRadix2(data);
         for (int n=0; n<result.size(); n++) {

@@ -1,12 +1,14 @@
 package se.softcoded.chordmasta.util;
 
+import se.softcoded.chordmasta.BlockData;
 import se.softcoded.chordmasta.StereoBlockData;
+import se.softcoded.chordmasta.signalprocessing.SignalGenerator;
 
 /**
  * Generates a sine wave of a specified frequency and amplitude.
  * The signal produced is a stereo signal where the samples are interleaved.
  */
-public class SineWaveGenerator {
+public class SineWaveGenerator implements SignalGenerator {
     private final int sampleRate;
     private final double frequency;
     private final double amplitude;
@@ -29,7 +31,8 @@ public class SineWaveGenerator {
     k is a repeating integer value that ranges from 0 to p–1.
     o is the offset (phase shift) of the signal.
     b is the signal bias.*/
-    public boolean generateBlock(int nrOfSamplesInBlock, StereoBlockData blockData) {
+    public boolean generateBlock(int nrOfSamplesInBlock, BlockData blockDataIn) {
+        StereoBlockData blockData = (StereoBlockData)blockDataIn;
         for (int sample = 0; sample<nrOfSamplesInBlock; sample++) {
             double y = amplitude * Math.sin(2 * Math.PI * frequency/(double)sampleRate * currentSample);
             currentSample++;
