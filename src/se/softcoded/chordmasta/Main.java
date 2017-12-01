@@ -24,6 +24,7 @@ public class Main {
         new Thread(() -> {
             //SineWaveGenerator audioGenerator = new SineWaveGenerator(SAMPLE_RATE, 440.0, 5.0);
             WavFileGenerator audioGenerator = new WavFileGenerator("./research/testfiles/ackordtest1.wav");
+            //WhiteNoise audioGenerator = new WhiteNoise(0.5, 1.0);
             try {
                 while (!done[0]) {
                     StereoBlockData block = new StereoBlockData(BLOCK_SIZE);
@@ -46,6 +47,7 @@ public class Main {
             int loops = 0;
 
             StereoToMono stereoToMono = new StereoToMono();
+            SampleRateExpander sampleRateExpander = new SampleRateExpander(2);
             LowPassFilter filter = new LowPassFilter();
             Decimator decimationFilter = new Decimator(DECIMATION_FACTOR);
             HannWindow hannWindow = new HannWindow(BLOCK_SIZE / DECIMATION_FACTOR);
@@ -66,10 +68,15 @@ public class Main {
                     stereoToMono.process(stereoblock, monoBlock);
                     metrics.stop("stereo-to-mono");
 
-                    metrics.start("low-pass-filter");
-                    MonoBlockData filteredData = new MonoBlockData(BLOCK_SIZE);
-                    filter.process(monoBlock, filteredData);
-                    metrics.stop("low-pass-filter");
+                    metrics.start("upsample");
+                    MonoBlockData expandedSignal = new MonoBlockData(BLOCK_SIZE * 2);
+                    sampleRateExpander.process(monoBlock, expandedSignal);
+                    metrics.stop("upsample");
+
+                    //metrics.start("low-pass-filter");
+                    //MonoBlockData filteredData = new MonoBlockData(BLOCK_SIZE);
+                    //filter.process(monoBlock, filteredData);
+                    //metrics.stop("low-pass-filter");
 
                     metrics.start("decimation");
                     MonoBlockData decimatedData = new MonoBlockData(BLOCK_SIZE / DECIMATION_FACTOR);
@@ -106,8 +113,9 @@ public class Main {
                         System.out.println("key="+c.key+", mag="+c.magnitude+", hits="+c.hits);
                     }
 
-                    /*csvFile.addColumn("Stereo", stereoblock);
+                    csvFile.addColumn("Stereo", stereoblock);
                     csvFile.addColumn("Mono-data", monoBlock);
+                    csvFile.addColumn("Upsampled", expandedSignal);
                     csvFile.addColumn("Low-pass-filter", filteredData);
                     csvFile.addColumn("Decimation", decimatedData);
                     csvFile.addColumn("Hann-window-factors", hannWindow.factors);
@@ -115,7 +123,7 @@ public class Main {
                     csvFile.addColumn("FFT", fftResult);
                     csvFile.addColumn("Normalized", normalizedMagnitude);
                     csvFile.addColumn("Candidates", candidateList);
-                    csvFile.save();*/
+                    csvFile.save();
 
                     if ((loops % 2) == 0) {
                         metrics.print();

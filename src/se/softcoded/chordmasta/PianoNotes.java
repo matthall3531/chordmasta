@@ -63,7 +63,7 @@ public class PianoNotes {
         int hiIdx = getKeyIdx(f + bandwidth);
         int size = hiIdx - lowIdx + 1;
         PianoKey[] array = new PianoKey[size];
-        for (int n=lowIdx; n<=hiIdx; n++) {
+        for (int n=lowIdx; n >= 0 && n<=hiIdx; n++) {
             array[n - lowIdx] = pianoKeys.get(n);
         }
         return array;

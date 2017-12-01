@@ -6,7 +6,7 @@ import se.softcoded.chordmasta.signalprocessing.SignalGenerator;
 
 import java.io.File;
 
-public class WavFileGenerator implements SignalGenerator{
+public class WavFileGenerator implements SignalGenerator {
     private WavFile wavFile;
 
     public WavFileGenerator(String filename) {
