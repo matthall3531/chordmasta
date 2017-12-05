@@ -5,10 +5,14 @@ import se.softcoded.chordmasta.signalprocessing.ProcessUnit;
 public class CandidateSelection implements ProcessUnit {
     private final double sampleRate;
     private final PianoNotes notes;
+    private final double minFrequency;
+    private final double maxFrequency;
 
     public CandidateSelection(PianoNotes notes, double Fs) {
         this.notes = notes;
         this.sampleRate = Fs;
+        this.minFrequency = notes.getNote(0).freqLower;
+        this.maxFrequency = notes.getNote(notes.getNumnerOfNotes() - 1).freqUpper;
     }
 
     /**
@@ -30,10 +34,12 @@ public class CandidateSelection implements ProcessUnit {
         for (int idx = 0; idx < 20; idx++) {
             int bin = binIdx[idx];
             double binMiddleFreq = calculateBinFrequency(bin, size);
-            PianoNotes.PianoKey[] keys = notes.findNotes(binMiddleFreq, sampleRate/(2*size));
-            for (PianoNotes.PianoKey key : keys) {
-                //System.out.println(idx + ". " + "binMiddleFrequency=" + binMiddleFreq + ", key=" + key + ", mag=" + fftResult.get(bin).abs());
-                candidateSet.add(key, data.get(bin));
+            if (binMiddleFreq > minFrequency && binMiddleFreq < maxFrequency) {
+                PianoNotes.PianoKey[] keys = notes.findNotes(binMiddleFreq, sampleRate / (2 * size));
+                for (PianoNotes.PianoKey key : keys) {
+                    //System.out.println(idx + ". " + "binMiddleFrequency=" + binMiddleFreq + ", key=" + key + ", mag=" + fftResult.get(bin).abs());
+                    candidateSet.add(key, data.get(bin));
+                }
             }
         }
     }

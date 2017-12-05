@@ -68,6 +68,14 @@ public class PianoNotes {
         }
         return array;
     }
+
+    public int getNumnerOfNotes() {
+        return pianoKeys.size();
+    }
+
+    public PianoKey getNote(int index) {
+        return pianoKeys.get(index);
+    }
 }
 
 
