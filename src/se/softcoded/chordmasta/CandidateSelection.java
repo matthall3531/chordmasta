@@ -38,7 +38,12 @@ public class CandidateSelection implements ProcessUnit {
                 PianoNotes.PianoKey[] keys = notes.findNotes(binMiddleFreq, sampleRate / (2 * size));
                 for (PianoNotes.PianoKey key : keys) {
                     //System.out.println(idx + ". " + "binMiddleFrequency=" + binMiddleFreq + ", key=" + key + ", mag=" + fftResult.get(bin).abs());
-                    candidateSet.add(key, data.get(bin));
+                    if (binMiddleFreq > key.freqLower && binMiddleFreq < key.freqUpper) {
+                        candidateSet.add(key, data.get(bin));
+                    }
+                    else {
+                        System.out.println("Discarding key : " + key);
+                    }
                 }
             }
         }

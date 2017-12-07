@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class PianoNotes {
+    private final static double GUARD_BAND_DIVISOR = 1.5;
+
     public class PianoKey {
         public final double freq;
         public final double freqLower;
@@ -41,7 +43,7 @@ public class PianoNotes {
             double freq = Math.pow(2, ((double) n - 49.0) / 12.0) * 440.0;
             double freqUpper = Math.pow(2, ((double) n - 48.0) / 12.0) * 440.0;
             String noteName = octaveNoteNames[(n - 1) % octaveNoteNames.length];
-            PianoKey key = new PianoKey(freq, freqLower + (freq - freqLower)/2, freqUpper - (freqUpper - freq)/2, noteName);
+            PianoKey key = new PianoKey(freq, freqLower + (freq - freqLower)/GUARD_BAND_DIVISOR, freqUpper - (freqUpper - freq)/GUARD_BAND_DIVISOR, noteName);
             pianoKeys.add(key);
             System.out.println(key);
         }
@@ -53,9 +55,11 @@ public class PianoNotes {
     }
 
     private int getKeyIdx(double frequency) {
-        return Collections.binarySearch(pianoKeys,
-                    new PianoKey(frequency, 0, 0, ""),
-                    (o1, o2) -> (o1).compareTo(o2));
+        return (int)Math.round(12.0 * log2(frequency/440.0)) + 48;
+    }
+
+    private double log2(double v) {
+        return Math.log(v) / Math.log(2);
     }
 
     public PianoKey[] findNotes(double f, double bandwidth) {

@@ -25,7 +25,7 @@ public class Main {
     private static final int EXPANDED_SAMPLE_RATE = 44100 * EXPAND_FACTOR;
     private static final int DECIMATION_FACTOR = 1;
     private static final int KEY_RANGE_HZ = 5500;
-    private static final int BLOCK_SIZE = 32768;
+    private static final int BLOCK_SIZE = 32768/4;
 
     public static void main(String[] args) {
         // Create queue for communication between threads
@@ -33,8 +33,8 @@ public class Main {
         boolean[] done = new boolean[] { false };
 
         new Thread(() -> {
-            SineWaveGenerator audioGenerator = new SineWaveGenerator(SAMPLE_RATE, 440.0, 5.0);
-            //WavFileGenerator audioGenerator = new WavFileGenerator("./research/testfiles/ackordtest1.wav");
+            //SineWaveGenerator audioGenerator = new SineWaveGenerator(SAMPLE_RATE, 660.0, 5.0);
+            WavFileGenerator audioGenerator = new WavFileGenerator("./research/testfiles/ackordtest1.wav");
             //WhiteNoise audioGenerator = new WhiteNoise(0.5, 1.0);
             try {
                 while (!done[0]) {
